@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="theme-color" content="#0f766e" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="长沙卡摸" />
+<link rel="manifest" href="./manifest.webmanifest" />
+<link rel="apple-touch-icon" href="./icon-192.png" />
+<title>长沙麻将卡摸助手 · 手机版</title>
+<style>
+:root{--bg:#f4f1e8;--card:#fffdf7;--ink:#1f2933;--muted:#6b7280;--line:#ddd6c7;--accent:#0f766e;--accent2:#b45309;--bad:#b91c1c;--warn:#92400e}
+*{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink)}
+.wrap{max-width:1180px;margin:0 auto;padding:24px}.hero{display:flex;justify-content:space-between;gap:18px;align-items:end;margin-bottom:18px}.hero h1{margin:0;font-size:30px}.hero p{margin:6px 0 0;color:var(--muted)}
+.badge{background:#e7f3f1;color:#115e59;border:1px solid #b8ddd8;padding:7px 10px;border-radius:999px;font-size:13px;white-space:nowrap}.grid{display:grid;grid-template-columns:1.03fr .97fr;gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.035)}h2{font-size:18px;margin:0 0 12px}.subhead{font-weight:800;font-size:14px;margin:14px 0 8px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.field{margin-bottom:12px}.field label{display:block;font-size:13px;font-weight:700;margin-bottom:6px}.hint{font-size:12px;color:var(--muted);margin-top:5px;line-height:1.5}
+input,select,textarea,button{font:inherit} input,select,textarea{width:100%;border:1px solid #cfc7b7;background:white;border-radius:10px;padding:10px 11px;outline:none}textarea{min-height:62px;resize:vertical}input:focus,textarea:focus,select:focus{border-color:var(--accent)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:0;border-radius:10px;padding:10px 14px;cursor:pointer;background:var(--accent);color:white;font-weight:700}.btn.secondary{background:#e9e4d8;color:#374151}.btn.warn{background:var(--accent2)}
+.tiles{display:flex;flex-wrap:wrap;gap:6px;min-height:34px}.tile{background:#fff;border:1px solid #cfc7b7;border-radius:7px;padding:5px 8px;font-weight:800;box-shadow:0 1px 2px rgba(0,0,0,.06)}.tile.m{border-bottom:3px solid #b91c1c}.tile.p{border-bottom:3px solid #2563eb}.tile.s{border-bottom:3px solid #15803d}
+.status{padding:12px;border-radius:12px;background:#f3f4f6;margin:10px 0;line-height:1.55}.status.ok{background:#e8f7ef;color:#166534}.status.big{background:#fff7ed;color:#9a3412}.status.err{background:#fef2f2;color:#991b1b}.status.warn{background:#fffbeb;color:#92400e}.status strong{display:block;margin-bottom:3px}
+.table{width:100%;border-collapse:collapse;font-size:14px}.table th,.table td{padding:9px 8px;border-bottom:1px solid #e7e0d3;text-align:left;vertical-align:top}.table th{font-size:12px;color:var(--muted)}.rank{font-weight:800}.best{background:#ecfdf5}.small{font-size:12px;color:var(--muted);line-height:1.45}.dangerLow{color:#166534;font-weight:800}.dangerMid{color:#a16207;font-weight:800}.dangerHigh{color:#b91c1c;font-weight:800}
+.kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}.kpi>div{background:#f7f4ec;border-radius:10px;padding:10px}.kpi b{display:block;font-size:18px}.kpi span{font-size:11px;color:var(--muted)}
+hr{border:0;border-top:1px solid #e7e0d3;margin:14px 0}.rules{font-size:13px;line-height:1.6;color:#4b5563}.foot{margin-top:16px;font-size:12px;color:var(--muted)}details{margin-top:6px}summary{cursor:pointer;font-size:12px;color:#4b5563}
+
+.mobile-tools{display:none;margin-top:10px;padding:10px;border:1px solid #d8d0c0;border-radius:14px;background:#faf7ef}
+.mobile-tools-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.mobile-tools-head b{font-size:13px}.count-pill{font-size:12px;color:var(--muted);background:#fff;border:1px solid #ddd6c7;border-radius:999px;padding:4px 8px}
+.suit-picker{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:4px;margin:5px 0 8px}
+.tile-btn{min-width:0;height:38px;padding:0;border:1px solid #cfc7b7;border-radius:7px;background:#fff;font-weight:800;box-shadow:0 1px 2px rgba(0,0,0,.04);touch-action:manipulation}
+.tile-btn.m{border-bottom:3px solid #b91c1c}.tile-btn.p{border-bottom:3px solid #2563eb}.tile-btn.s{border-bottom:3px solid #15803d}
+.picker-label{font-size:11px;color:var(--muted);margin-top:4px}
+.mode-btn{border:1px solid #cfc7b7;background:#fff;color:#374151;border-radius:9px;padding:7px 10px;font-size:12px;font-weight:700}.mode-btn.active{background:#fff1f2;color:#be123c;border-color:#fda4af}
+.hero-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.install-btn{display:none;border:1px solid #b8ddd8;background:#fff;color:#115e59;border-radius:999px;padding:7px 10px;font-weight:800;font-size:13px;cursor:pointer}
+.save-note{font-size:11px;color:var(--muted);margin-top:8px}.sticky-mobile{display:none}
+@media(max-width:700px){
+  body{padding-bottom:74px}.wrap{padding:10px 10px calc(20px + env(safe-area-inset-bottom))}.hero{gap:10px;margin-bottom:10px}.hero h1{font-size:24px}.hero p{font-size:13px;line-height:1.45}.badge{font-size:11px;padding:6px 8px}.card{border-radius:13px;padding:12px}.mobile-tools{display:block}.field{margin-bottom:10px}input,select,textarea{font-size:16px;padding:11px}.actions .btn{flex:1 1 46%;min-height:44px}.table{font-size:12px;display:block;overflow-x:auto;white-space:nowrap}.table th,.table td{padding:8px 6px}.table details{white-space:normal;min-width:170px}.tile{padding:5px 6px}.foot{padding-bottom:8px}.sticky-mobile{display:grid;grid-template-columns:1fr 1fr;position:fixed;left:0;right:0;bottom:0;z-index:40;gap:8px;padding:8px 10px calc(8px + env(safe-area-inset-bottom));background:rgba(244,241,232,.96);backdrop-filter:blur(8px);border-top:1px solid #d8d0c0}.sticky-mobile button{min-height:44px;border:0;border-radius:11px;font-weight:800}.sticky-mobile .primary{background:var(--accent);color:#fff}.sticky-mobile .secondary{background:#fff;color:#374151;border:1px solid #d8d0c0}
+}
+
+@media(max-width:900px){.grid{grid-template-columns:1fr}.hero{align-items:flex-start;flex-direction:column}.row,.row3{grid-template-columns:1fr}.wrap{padding:14px}.kpi{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <div><h1>长沙麻将 · 卡摸助手 v5</h1><p>牌效 + 多步模拟 + 对子/杠摇 + 全求人单吊 + 七对留牌 + 卡下家 + 防送杠 + Push/Fold。全部在本地浏览器计算。</p></div>
+    <div class="hero-actions"><button id="installApp" class="install-btn">安装到桌面</button><div class="badge">108张 · 无字牌 · 小胡仅自摸</div></div>
+  </div>
+
+  <div class="grid">
+    <section class="card">
+      <h2>① 输入牌局</h2>
+      <div class="field"><label>你的暗手</label><input id="hand" value="7788m 123456p 678s" placeholder="例：7788m 123456p 678s"/><div class="hint">m=万，p=筒，s=条。支持 <b>123m 55p 678s</b>。手机可直接点牌录入。</div>
+      <div class="mobile-tools" id="mobilePicker">
+        <div class="mobile-tools-head"><b>点牌录入手牌</b><span class="count-pill" id="handCount">0张</span></div>
+        <div class="picker-label">万</div><div class="suit-picker" id="pickM"></div>
+        <div class="picker-label">筒</div><div class="suit-picker" id="pickP"></div>
+        <div class="picker-label">条</div><div class="suit-picker" id="pickS"></div>
+        <div class="actions"><button type="button" class="mode-btn" id="removeMode">减牌模式：关</button><button type="button" class="mode-btn" id="sortHand">整理手牌</button><button type="button" class="mode-btn" id="clearHand">清空手牌</button></div>
+        <div class="save-note">牌局输入会自动保存在这台手机浏览器里。刷新页面不会丢。</div>
+      </div></div>
+      <div class="field"><label>你的吃 / 碰 / 杠</label><input id="melds" placeholder="例：777m 345p 3333s（每组空格分开）"/></div>
+
+      <div class="subhead">三家牌河（按实际出牌顺序填写）</div>
+      <div class="row3">
+        <div class="field"><label>上家牌河</label><textarea id="riverUp" placeholder="9p 1m 6s"></textarea></div>
+        <div class="field"><label>对家牌河</label><textarea id="riverAcross" placeholder="8m 2p 9s"></textarea></div>
+        <div class="field"><label>下家牌河</label><textarea id="riverDown" placeholder="1p 4m 7s"></textarea></div>
+      </div>
+
+      <div class="subhead">三家公开副露（必须分开，才能判断全求人/座次风险）</div>
+      <div class="row3">
+        <div class="field"><label>上家副露</label><input id="openUp" placeholder="例：777m 345p"/></div>
+        <div class="field"><label>对家副露</label><input id="openAcross" placeholder="例：222s"/></div>
+        <div class="field"><label>下家副露</label><input id="openDown" placeholder="例：345m 678m 777p"/></div>
+      </div>
+
+      <div class="row">
+        <div class="field"><label>打法偏好</label><select id="style"><option value="speed">快胡优先</option><option value="balanced" selected>均衡</option><option value="big">大胡倾向</option></select></div>
+        <div class="field"><label>防守权重</label><select id="defense"><option value="light">轻防守</option><option value="normal" selected>正常</option><option value="strict">严格防守</option></select></div>
+      </div>
+
+      <div class="subhead">局势 / 转守信息</div>
+      <div class="row">
+        <div class="field"><label>连续摸牌未改善</label><select id="dryStreak"><option value="0" selected>0巡 / 正常</option><option value="2">1–2巡</option><option value="4">3–4巡</option><option value="6">5巡以上</option></select><div class="hint">用于识别“运气差、长期不进张”时是否该降低追胡权重。</div></div>
+        <div class="field"><label>对手大胡威胁</label><div class="hint">不知道就保持“自动判断”；有明确读牌信息时再手动标记。</div></div>
+      </div>
+      <div class="row3">
+        <div class="field"><label>上家</label><select id="threatUp"><option value="auto" selected>自动判断</option><option value="suspect">疑似大胡听牌</option><option value="tenpai">明确大胡听牌</option></select></div>
+        <div class="field"><label>对家</label><select id="threatAcross"><option value="auto" selected>自动判断</option><option value="suspect">疑似大胡听牌</option><option value="tenpai">明确大胡听牌</option></select></div>
+        <div class="field"><label>下家</label><select id="threatDown"><option value="auto" selected>自动判断</option><option value="suspect">疑似大胡听牌</option><option value="tenpai">明确大胡听牌</option></select></div>
+      </div>
+
+      <div class="row">
+        <div class="field"><label>别人刚打出的牌（可选）</label><input id="lastDiscard" placeholder="例：7m"/></div>
+        <div class="field"><label>谁打的？</label><select id="fromSeat"><option value="up">上家（你可吃）</option><option value="across">对家</option><option value="down">下家</option></select></div>
+      </div>
+
+      <div class="subhead">深度模拟（可选）</div>
+      <div class="row">
+        <div class="field"><label>模拟次数</label><select id="simTrials"><option value="120">120次（快）</option><option value="300" selected>300次（推荐）</option><option value="700">700次（更稳）</option></select></div>
+        <div class="field"><label>向后模拟自己的摸牌</label><select id="simDepth"><option value="4">4巡</option><option value="6" selected>6巡</option><option value="8">8巡</option></select><div class="hint">从当前未知牌池无放回抽样；每次摸牌后由快速策略自动选弃牌。结果是相对比较，不是假装知道他家暗牌。</div></div>
+      </div>
+
+      <div class="actions">
+        <button class="btn" id="analyze">分析当前手牌</button>
+        <button class="btn" id="simulate">深度模拟候选打法</button>
+        <button class="btn warn" id="callAnalyze">判断吃 / 碰</button>
+        <button class="btn secondary" id="sample">换一个示例牌</button>
+        <button class="btn secondary" id="clear">清空场上信息</button>
+      </div>
+
+      <hr/>
+      <div class="rules"><b>已写入：</b>普通小胡需要258作将且只能自摸；碰碰胡、清一色不要求258作将；将将胡只要求全部为258；七对、全求人按大胡路线处理，可接炮。<br/><b>实战层：</b>根据三家牌河和副露，估计下家吃牌、各家碰/暗刻点杠、三副露后全求人风险；保留对子、暗刻和明碰的活杠价值。<br/><b>v4：</b>全求人单吊、七对活单、连续不进张/大胡威胁下的弃胡防守。<br/><b>v5：</b>加入多步无放回抽样：比较不同弃牌未来4–8巡的自摸率、大胡率、杠摇机会、平均成牌速度和“对手先胡”的公开信息风险模型。</div>
+    </section>
+
+    <section class="card">
+      <h2>② 分析结果</h2>
+      <div id="preview" class="tiles"></div>
+      <div id="status" class="status"><strong>等待分析</strong>输入手牌后点“分析当前手牌”。</div>
+      <div id="kpis"></div>
+      <div id="recommend"></div>
+      <div id="simResult"></div>
+      <div id="callResult"></div>
+    </section>
+  </div>
+  <div class="sticky-mobile"><button class="secondary" id="mobileCall">吃 / 碰判断</button><button class="primary" id="mobileAnalyze">分析手牌</button></div>
+  <div class="foot">网页版 v5.1 · 手机优先 PWA。深度模拟从当前未知牌池做随机抽样；他家“先胡概率”仍是根据巡目、副露和手动威胁标记得到的风险模型，不读取暗牌。模拟用于比较打法相对优劣，不应理解成真实胜率预言。</div>
+</div>
+<script>
+const SUITS=['m','p','s']; const suitName={m:'万',p:'筒',s:'条'};
+const seatLabel={up:'上家',across:'对家',down:'下家'};
+function idx(s,r){return SUITS.indexOf(s)*9+(r-1)}
+function tileStr(i){const s=SUITS[Math.floor(i/9)],r=i%9+1;return r+s}
+function pretty(i){const s=SUITS[Math.floor(i/9)],r=i%9+1;return r+suitName[s]}
+function arr27(){return Array(27).fill(0)}
+function clone(a){return a.slice()}
+function sum(a){return a.reduce((x,y)=>x+y,0)}
+
+function parseTileList(text){
+  const list=[]; const raw=(text||'').trim(); if(!raw) return list;
+  const compact=raw.replace(/[，,、|]/g,' ').replace(/\s+/g,' ').trim();
+  const re=/([1-9]+)\s*([mps])/gi; let m;
+  while((m=re.exec(compact))){for(const ch of m[1])list.push(idx(m[2].toLowerCase(),Number(ch)))}
+  const leftovers=compact.replace(re,'').replace(/\s/g,'');
+  if(leftovers) throw new Error('无法识别：'+leftovers+'。请用 123m 55p 678s 这种格式。');
+  return list;
+}
+function listToCounts(list){const a=arr27();for(const t of list)a[t]++;return a}
+function parseTiles(text){return listToCounts(parseTileList(text))}
+function parseMeldGroups(text){
+  const groups=[]; const raw=(text||'').trim(); if(!raw) return groups;
+  for(const tok of raw.replace(/[，,、|]/g,' ').split(/\s+/).filter(Boolean)){
+    const m=tok.match(/^([1-9]{3,4})([mps])$/i); if(!m) throw new Error('副露格式错误：'+tok);
+    const nums=[...m[1]].map(Number),s=m[2].toLowerCase(); const same=nums.every(x=>x===nums[0]); const sorted=nums.slice().sort((a,b)=>a-b);
+    const seq=nums.length===3&&sorted[1]===sorted[0]+1&&sorted[2]===sorted[1]+1;
+    if(!(same||seq))throw new Error('副露不是顺子/刻子/杠：'+tok);
+    groups.push({tiles:nums.map(n=>idx(s,n)),type:same?(nums.length===4?'gang':'peng'):'chi',suit:s});
+  } return groups;
+}
+function groupsToCounts(gs){const a=arr27();for(const g of gs)for(const t of g.tiles)a[t]++;return a}
+function validateCounts(...arrays){const t=arr27();for(const a of arrays)for(let i=0;i<27;i++)t[i]+=a[i];for(let i=0;i<27;i++)if(t[i]>4)throw new Error(pretty(i)+' 共出现 '+t[i]+' 张，超过4张。');return t}
+
+function canMeldAll(c,memo=new Map()){
+  let i=c.findIndex(x=>x>0); if(i<0)return true; const key=c.join(''); if(memo.has(key))return memo.get(key);
+  if(c[i]>=3){c[i]-=3;const ok=canMeldAll(c,memo);c[i]+=3;if(ok){memo.set(key,true);return true}}
+  const r=i%9,s=Math.floor(i/9); if(r<=6&&Math.floor((i+2)/9)===s&&c[i+1]>0&&c[i+2]>0){c[i]--;c[i+1]--;c[i+2]--;const ok=canMeldAll(c,memo);c[i]++;c[i+1]++;c[i+2]++;if(ok){memo.set(key,true);return true}}
+  memo.set(key,false);return false;
+}
+function standardHu(concealed,openMelds,pair258=true){
+  const needed=4-openMelds;if(sum(concealed)!==needed*3+2)return false;
+  for(let i=0;i<27;i++)if(concealed[i]>=2){const r=i%9+1;if(pair258&&![2,5,8].includes(r))continue;const c=clone(concealed);c[i]-=2;if(canMeldAll(c))return true}return false;
+}
+function all258(counts){for(let i=0;i<27;i++)if(counts[i]&&![2,5,8].includes(i%9+1))return false;return sum(counts)>0}
+function isQingyise(all){let suit=-1;for(let i=0;i<27;i++)if(all[i]){const s=Math.floor(i/9);if(suit<0)suit=s;else if(suit!==s)return false}return suit>=0}
+function allTripletMelds(groups){return groups.every(g=>g.type==='peng'||g.type==='gang')}
+function pengpengHu(concealed,groups){if(!allTripletMelds(groups))return false;const need=4-groups.length;if(sum(concealed)!==need*3+2)return false;for(let i=0;i<27;i++)if(concealed[i]>=2){const c=clone(concealed);c[i]-=2;let k=0,ok=true;for(let j=0;j<27;j++){if(c[j]%3){ok=false;break}k+=c[j]/3}if(ok&&k===need)return true}return false}
+function sevenPairsHu(hand,groups){if(groups.length||sum(hand)!==14)return false;let pairs=0;for(const c of hand)pairs+=Math.floor(c/2);return pairs>=7}
+function allQiurenHu(hand,groups){if(groups.length!==4||sum(hand)!==2)return false;for(let i=0;i<27;i++)if(hand[i]===2)return true;return false}
+function huTypes(hand,groups){const all=clone(hand),gc=groupsToCounts(groups);for(let i=0;i<27;i++)all[i]+=gc[i];const out=[];const equiv=sum(hand)+groups.length*3;if(equiv===14&&all258(all))out.push('将将胡');if(sevenPairsHu(hand,groups))out.push('七对');if(allQiurenHu(hand,groups))out.push('全求人');if(pengpengHu(hand,groups))out.push('碰碰胡');if(isQingyise(all)&&standardHu(hand,groups.length,false))out.push('清一色');if(standardHu(hand,groups.length,true))out.push('小胡');return [...new Set(out)]}
+
+const SHANTEN_CACHE=new Map();
+function standardShanten(counts,openMelds=0,pair258=true){
+  const ck=counts.join('')+'|'+openMelds+'|'+(pair258?1:0);if(SHANTEN_CACHE.has(ck))return SHANTEN_CACHE.get(ck);
+  let best=8;const c=clone(counts);
+  function dfs(pos,m,t,p){while(pos<27&&c[pos]===0)pos++;if(pos>=27){const M=m+openMelds,T=Math.min(t,4-M);best=Math.min(best,8-2*M-T-p);return}if(m+openMelds>4)return;const r=pos%9,s=Math.floor(pos/9);
+    if(c[pos]>=3){c[pos]-=3;dfs(pos,m+1,t,p);c[pos]+=3}
+    if(r<=6&&Math.floor((pos+2)/9)===s&&c[pos+1]>0&&c[pos+2]>0){c[pos]--;c[pos+1]--;c[pos+2]--;dfs(pos,m+1,t,p);c[pos]++;c[pos+1]++;c[pos+2]++}
+    if(!p&&c[pos]>=2&&(!pair258||[2,5,8].includes(r+1))){c[pos]-=2;dfs(pos,m,t,1);c[pos]+=2}
+    if(c[pos]>=2){c[pos]-=2;dfs(pos,m,t+1,p);c[pos]+=2}
+    if(r<=7&&c[pos+1]>0){c[pos]--;c[pos+1]--;dfs(pos,m,t+1,p);c[pos]++;c[pos+1]++}
+    if(r<=6&&c[pos+2]>0){c[pos]--;c[pos+2]--;dfs(pos,m,t+1,p);c[pos]++;c[pos+2]++}
+    c[pos]--;dfs(pos,m,t,p);c[pos]++;
+  } dfs(0,0,0,0);SHANTEN_CACHE.set(ck,best);return best;
+}
+function bigPotential(hand,groups){const all=clone(hand),gc=groupsToCounts(groups);for(let i=0;i<27;i++)all[i]+=gc[i];const total=sum(all)||1,suitCounts=[0,0,0];let j=0,pairs=0,trips=0,pairUnits=0;for(let i=0;i<27;i++){suitCounts[Math.floor(i/9)]+=all[i];if([2,5,8].includes(i%9+1))j+=all[i];if(all[i]>=2)pairs++;if(all[i]>=3)trips++;if(!groups.length)pairUnits+=Math.floor(all[i]/2)}return{q:Math.max(...suitCounts)/total,jiang:j/total,peng:Math.min(1,(pairs+trips*1.5)/8),qidu:groups.length?0:Math.min(1,pairUnits/6)}}
+function routeScore(style,pot){if(style==='speed')return 0;const v=Math.max(pot.q,pot.peng,pot.jiang,pot.qidu||0);return style==='balanced'?7*v:17*v}
+function defenseFactor(x){return x==='light'?.55:x==='strict'?1.45:1}
+function pairFactor(style){return style==='speed'?.72:style==='big'?1.32:1}
+function sevenPairsStats(hand,groups,visible){if(groups.length)return{available:false,sh:99,pairUnits:0,liveOuts:0,deadSingles:0,eff:[],score:0,details:[]};let pairUnits=0,deadSingles=0,liveOuts=0;const eff=[],details=[];for(let t=0;t<27;t++){pairUnits+=Math.floor(hand[t]/2);if(hand[t]%2===1){const left=Math.max(0,4-visible[t]);if(left>0){liveOuts+=left;eff.push({t,left,nsh:0});details.push(pretty(t)+'单张外面约剩'+left+'张，可自摸/接炮配成对子');}else{deadSingles++;details.push(pretty(t)+'单张同牌已死，七对路线应优先处理');}}}const sh=Math.max(-1,6-pairUnits);const score=pairUnits*12+liveOuts*1.8-deadSingles*7;return{available:true,sh,pairUnits,liveOuts,deadSingles,eff,score,details}}
+function allQiurenWaitValue(wait,state,visible){const left=Math.max(0,4-visible[wait]),r=wait%9+1,s=Math.floor(wait/9);const rivers=[state.upL,state.acL,state.downL];let repeat=0;for(const rv of rivers)if(countInList(rv,wait)>0)repeat++;const terminal=(r===1||r===9)?3.5:(r===2||r===8)?2:(r===3||r===7)?.8:-.5;let suitPressure=0;for(const gs of [state.openUp,state.openAcross,state.openDown]){const st=seatStats(gs);suitPressure+=Math.max(0,st.bySuit[s]-1)}const score=left*11+terminal+repeat*1.8-suitPressure*1.8;const reasons=['剩余可见外约 '+left+' 张'];if(terminal>1)reasons.push('边张更容易成为别人弃牌');if(repeat)reasons.push(repeat+'家牌河出现过同牌，后续重复舍出倾向略增');if(suitPressure)reasons.push('有人公开副露偏向该花色，可能降低其舍出概率');return{wait,left,score,reasons}}
+function pairGangValue(hand,groups,visible){
+  let score=0,pairs=0,trips=0,liveTrip=0,livePeng=0;const details=[];
+  for(let t=0;t<27;t++){const c=hand[t],left=Math.max(0,4-visible[t]),r=t%9+1;
+    if(c===2){pairs++;let v=5+( [2,5,8].includes(r)?2.5:0 )+left*1.6;score+=v;if(left>0)details.push(pretty(t)+'对子，外面约剩'+left+'张，可碰/摸成刻再等杠');}
+    else if(c===3){trips++;let v=9+left*14;score+=v;if(left>0){liveTrip++;details.push(pretty(t)+'暗刻且第4张未见，直接有杠摇升级机会');}}
+    else if(c===4){score+=18;details.push(pretty(t)+'四张在手，具备直接开杠价值');}
+  }
+  for(const g of groups){if(g.type!=='peng')continue;const t=g.tiles[0],left=Math.max(0,4-visible[t]);if(left>0){score+=16*left;livePeng++;details.push(pretty(t)+'明碰，第4张未见，摸到可加杠转杠摇');}}
+  return{score,pairs,trips,liveTrip,livePeng,details};
+}
+
+function ukeireForState(state,openMelds,visible){const sh=standardShanten(state,openMelds,true),eff=[];let total=0;for(let t=0;t<27;t++){const left=4-visible[t];if(left<=0)continue;state[t]++;const nsh=standardShanten(state,openMelds,true);state[t]--;if(nsh<sh){eff.push({t,left,nsh});total+=left}}return{sh,eff,total,route:'小胡'}}
+function mergeEff(lists){const m=new Map();for(const list of lists)for(const x of list){if(!m.has(x.t)||m.get(x.t).left<x.left)m.set(x.t,{...x})}return [...m.values()].sort((a,b)=>b.left-a.left||a.t-b.t)}
+function strategicUkeire(state,groups,visible,wholeState){const std=ukeireForState(state,groups.length,visible),candidates=[std];const q=sevenPairsStats(state,groups,visible);if(q.available){candidates.push({sh:q.sh,eff:q.eff,total:q.liveOuts,route:'七对',q})}if(groups.length===4&&sum(state)===1){const t=state.findIndex(x=>x>0),aq=allQiurenWaitValue(t,wholeState,visible);candidates.push({sh:0,eff:aq.left>0?[{t,left:aq.left,nsh:-1}]:[],total:aq.left,route:'全求人单吊',aq})}const bestSh=Math.min(...candidates.map(x=>x.sh));const best=candidates.filter(x=>x.sh===bestSh);const eff=mergeEff(best.map(x=>x.eff||[])),total=eff.reduce((a,x)=>a+x.left,0);return{sh:bestSh,eff,total,route:best.map(x=>x.route).join(' / '),std,q,aq:best.find(x=>x.aq)?.aq||null}}
+
+function seatStats(groups){const bySuit=[0,0,0];let trip=0;for(const g of groups){bySuit[SUITS.indexOf(g.suit)]++;if(g.type==='peng'||g.type==='gang')trip++}return{open:groups.length,trip,bySuit}}
+function countInList(list,t){let n=0;for(const x of list)if(x===t)n++;return n}
+function publicCountsWithoutOwn(state){const a=arr27();for(const src of [groupsToCounts(state.groups),state.upC,state.acC,state.downC,groupsToCounts(state.openUp),groupsToCounts(state.openAcross),groupsToCounts(state.openDown)])for(let i=0;i<27;i++)a[i]+=src[i];return a}
+function chiWindows(t){const s=Math.floor(t/9),r=t%9,out=[];for(let start=r-2;start<=r;start++){if(start<0||start>6)continue;const ids=[s*9+start,s*9+start+1,s*9+start+2];if(ids.includes(t))out.push(ids.filter(x=>x!==t))}return out}
+function dangerClass(x){if(x<10)return{label:'低',cls:'dangerLow'};if(x<28)return{label:'中',cls:'dangerMid'};return{label:'高',cls:'dangerHigh'}}
+function comb(n,k){if(k<0||k>n)return 0;k=Math.min(k,n-k);let v=1;for(let i=1;i<=k;i++)v=v*(n-k+i)/i;return v}
+function hyperAtLeast(successes,pool,draws,need){if(successes<need||pool<=0||draws<=0)return 0;draws=Math.min(draws,pool);let den=comb(pool,draws);if(!den)return 0;let p=0;for(let k=need;k<=Math.min(successes,draws);k++)p+=comb(successes,k)*comb(pool-successes,draws-k)/den;return Math.max(0,Math.min(1,p))}
+function probAtLeastOne(successes,pool,draws){return hyperAtLeast(successes,pool,draws,1)}
+function pct(x){return Math.round(x*100)+'%'}
+function manualThreat(v){return v==='tenpai'?42:v==='suspect'?22:0}
+function groupAll258(g){return g.tiles.every(t=>[2,5,8].includes(t%9+1))}
+function seatThreatProfile(state,seat){const groups=seat==='up'?state.openUp:seat==='across'?state.openAcross:state.openDown;const river=seat==='up'?state.upL:seat==='across'?state.acL:state.downL;const manual=seat==='up'?state.threatUp:seat==='across'?state.threatAcross:state.threatDown;const st=seatStats(groups);let score=manualThreat(manual),signals=[];if(st.open>=3){score+=11;signals.push('副露已'+st.open+'组');}if(st.open===4){score+=18;signals.push('全求人单吊形态');}const maxSuit=Math.max(...st.bySuit),qingSuit=maxSuit>=2&&maxSuit===st.open?st.bySuit.indexOf(maxSuit):-1;if(qingSuit>=0){score+=11;signals.push('清一色方向明显');}if(st.trip>=2){score+=9;signals.push('碰碰胡方向明显');}const jiangSignal=groups.length>=2&&groups.every(g=>g.type!=='chi'&&groupAll258(g));if(jiangSignal){score+=10;signals.push('将将胡方向明显');}if(manual==='suspect')signals.push('手动标记疑似大胡听牌');if(manual==='tenpai')signals.push('手动标记明确大胡听牌');return{seat,groups,river,st,score,signals,qingSuit,jiangSignal,manual}}
+function gameSituation(state){const profiles=['up','across','down'].map(x=>seatThreatProfile(state,x));const max=Math.max(...profiles.map(x=>x.score)),avgRiver=(state.upL.length+state.acL.length+state.downL.length)/3,late=avgRiver>=7,dry=state.dryStreak;const fold=max>=38||(max>=26&&dry>=2)||(dry>=6&&late);const caution=!fold&&(max>=22||(dry>=4&&late));const attackScale=fold?(max>=42?.08:.2):caution?.72:1;const defenseBoost=fold?2.25:caution?1.35:1;return{profiles,max,avgRiver,late,dry,fold,caution,attackScale,defenseBoost}}
+function ronDanger(state,d,postHand,sit){const pub=publicCountsWithoutOwn(state),unknown=arr27();for(let i=0;i<27;i++)unknown[i]=Math.max(0,4-postHand[i]-pub[i]-(i===d?1:0));const pool=Math.max(1,108-(sum(postHand)+sum(pub)+1));let risk=0;const reasons=[];for(const p of sit.profiles){if(p.score<8)continue;let shape=1;const suit=Math.floor(d/9),rank=d%9+1,seen=countInList(p.river,d);if(p.qingSuit>=0)shape*=p.qingSuit===suit?1.9:.28;if(p.jiangSignal)shape*=[2,5,8].includes(rank)?1.9:.22;if(p.st.trip>=2){const pairP=hyperAtLeast(unknown[d],pool,Math.max(1,13-p.st.open*3),2);shape*=1+pairP*1.8}if(p.st.open===4){const holdP=Math.min(1,unknown[d]/pool*3.2);shape*=holdP*2.5;}shape*=Math.pow(.8,seen);const r=p.score*.22*shape;risk+=r;if(r>=3)reasons.push(seatLabel[p.seat]+'大胡威胁使'+pretty(d)+'放铳风险偏高');}return{risk,reasons}}
+
+function discardRisk(state,d,postHand){
+  const reasons=[];let risk=0;const pub=publicCountsWithoutOwn(state);const unknown=arr27();for(let i=0;i<27;i++)unknown[i]=Math.max(0,4-postHand[i]-pub[i]-(i===d?1:0));
+  const knownPhysical=sum(postHand)+sum(pub)+1;const pool=Math.max(1,108-knownPhysical);const remainSame=unknown[d];
+  const seats=[['up',state.openUp,state.upL],['across',state.openAcross,state.acL],['down',state.openDown,state.downL]];
+  for(const [seat,groups,river] of seats){
+    const st=seatStats(groups),slots=Math.max(1,13-st.open*3);
+    let pPeng=hyperAtLeast(remainSame,pool,slots,2),pGang=hyperAtLeast(remainSame,pool,slots,3);
+    const shapeBias=1+st.trip*.28; pPeng=Math.min(1,pPeng*shapeBias);pGang=Math.min(1,pGang*shapeBias);
+    risk+=pPeng*18+pGang*65;
+    if(pGang>=.012)reasons.push(seatLabel[seat]+'暗刻点杠估计约 '+pct(pGang));
+    else if(remainSame<3&&st.trip>=1)reasons.push(seatLabel[seat]+'无法再用这张直接点杠');
+    if(st.open>=3&&pPeng>=.02){risk+=pPeng*70;reasons.push(seatLabel[seat]+'已3副露，送碰进入全求人风险约 '+pct(pPeng));}
+  }
+
+  const downStats=seatStats(state.openDown), suit=Math.floor(d/9),downSlots=Math.max(1,13-downStats.open*3);let chiProb=0,plausible=0;
+  for(const pair of chiWindows(d)){
+    if(unknown[pair[0]]<=0||unknown[pair[1]]<=0)continue;
+    let w=probAtLeastOne(unknown[pair[0]],pool,downSlots)*probAtLeastOne(unknown[pair[1]],pool,downSlots);
+    if(countInList(state.downL,pair[0])>0)w*=.78;if(countInList(state.downL,pair[1])>0)w*=.78;
+    if(downStats.bySuit[suit]>=2)w*=1.45; w=Math.min(1,w);chiProb=1-(1-chiProb)*(1-w);plausible++;
+  }
+  risk+=chiProb*22;
+  if(chiProb>=.03)reasons.push('下家吃进概率启发估计约 '+pct(chiProb)+'（'+plausible+'种顺子窗口）');
+  if(downStats.open>=3&&chiProb>=.02){risk+=chiProb*85;reasons.push('下家已3副露：被吃后进入全求人风险显著');}
+
+  const samePublic=pub[d];if(remainSame<2){risk=Math.max(0,risk-2);reasons.push('剩余同牌不足2张，基本不送碰');}
+  if(remainSame<3){reasons.push('剩余同牌不足3张，不会直接送暗刻点杠');}
+  if(samePublic>=2){risk=Math.max(0,risk-1.5);reasons.push('同牌已有多张公开，风险进一步下降');}
+  risk=Math.max(0,risk);return{risk,reasons:[...new Set(reasons)],unknownSame:remainSame,chiWindows:plausible,chiProb};
+}
+
+function visibleCounts(state){const a=arr27();for(const src of [state.hand,groupsToCounts(state.groups),state.upC,state.acC,state.downC,groupsToCounts(state.openUp),groupsToCounts(state.openAcross),groupsToCounts(state.openDown)])for(let i=0;i<27;i++)a[i]+=src[i];return a}
+function discardAnalysis(state,handOverride=null,groupsOverride=null){
+  const hand=handOverride||state.hand,groups=groupsOverride||state.groups,vis=visibleCounts({...state,hand,groups}),sit=gameSituation(state);const rows=[];
+  for(let d=0;d<27;d++)if(hand[d]>0){const st=clone(hand);st[d]--;const u=strategicUkeire(st,groups,vis,state);const pot=bigPotential(st,groups),pg=pairGangValue(st,groups,vis),q=sevenPairsStats(st,groups,vis);const dr=discardRisk({...state,hand,groups},d,st),rr=ronDanger({...state,hand,groups},d,st,sit);let aq=null;if(groups.length===4&&sum(st)===1){const wt=st.findIndex(x=>x>0);aq=allQiurenWaitValue(wt,state,vis)}const routeBonus=(q.available&&q.pairUnits>=4?q.score*(state.style==='big'?1.15:.62):0)+(aq?aq.score*1.7:0);const offense=-u.sh*100+u.total*1.25+routeScore(state.style,pot)+pg.score*pairFactor(state.style)+routeBonus;const risk=dr.risk+rr.risk;const score=offense*sit.attackScale-risk*defenseFactor(state.defense)*sit.defenseBoost;const reasons=[...dr.reasons,...rr.reasons];rows.push({d,sh:u.sh,total:u.total,eff:u.eff,route:u.route,score,risk,reasons,pot,pg,q,aq,sit})}
+  rows.sort((a,b)=>b.score-a.score||a.risk-b.risk||a.sh-b.sh||b.total-a.total);return rows;
+}
+
+
+function routeShantenQuick(hand,groups){
+  let sh=standardShanten(hand,groups.length,true);
+  if(!groups.length){let pu=0;for(const c of hand)pu+=Math.floor(c/2);sh=Math.min(sh,Math.max(-1,6-pu));}
+  if(groups.length===4&&sum(hand)===1)sh=Math.min(sh,0);
+  return sh;
+}
+function unknownPoolFromVisible(vis){const p=arr27();for(let i=0;i<27;i++)p[i]=Math.max(0,4-vis[i]);return p}
+function poolTotal(p){return sum(p)}
+function drawFromPool(p){let n=poolTotal(p);if(n<=0)return -1;let x=Math.random()*n;for(let i=0;i<27;i++){x-=p[i];if(x<0){p[i]--;return i}}return -1}
+function quickUkeire(hand,groups,pool){const sh=routeShantenQuick(hand,groups);let total=0;for(let t=0;t<27;t++)if(pool[t]>0){hand[t]++;const ns=routeShantenQuick(hand,groups);hand[t]--;if(ns<sh)total+=pool[t]}return{sh,total}}
+function quickBestDiscard(hand,groups,pool,style){let best=null;for(let d=0;d<27;d++)if(hand[d]>0){hand[d]--;const sh=routeShantenQuick(hand,groups);let pair=0,trip=0,jiangPair=0,links=0,qpair=0;for(let i=0;i<27;i++){const c=hand[i],r=i%9;if(c===2){pair++;if([2,5,8].includes(r+1))jiangPair++}if(c>=3)trip++;if(c>0){if(r<8&&hand[i+1]>0)links+=Math.min(c,hand[i+1]);if(r<7&&hand[i+2]>0)links+=.45*Math.min(c,hand[i+2]);}if(!groups.length)qpair+=Math.floor(c/2)}let live=0;for(let t=0;t<27;t++)if(hand[t]>0)live+=pool[t]*.08;const bonus=pair*(style==='speed'?1.1:2.8)+trip*(style==='big'?8:5)+jiangPair*1.8+links*1.3+(style==='big'?qpair*2.1:qpair*.55)+live;const score=-sh*100+bonus;hand[d]++;if(!best||score>best.score)best={d,score,sh,total:0}}return best}
+function exposedPengHas(groups,t){return groups.some(g=>g.type==='peng'&&g.tiles[0]===t)}
+function opponentCycleHazard(sit){let h=.012+Math.min(.11,sit.max/430)+Math.min(.045,sit.avgRiver*.004);if(sit.fold)h+=.05;else if(sit.caution)h+=.02;return Math.max(.01,Math.min(.24,h))}
+function simulateCandidate(state,row,trials,depth){
+  const vis=visibleCounts(state),basePool=unknownPoolFromVisible(vis),baseHand=clone(state.hand);baseHand[row.d]--;
+  const initialRisk=row.risk;let wins=0,bigWins=0,oppFirst=0,gangOpp=0,tenpaiHits=0,winTurnSum=0,alive=0;
+  const sit=gameSituation(state),haz=opponentCycleHazard(sit);
+  for(let z=0;z<trials;z++){
+    const hand=clone(baseHand),pool=clone(basePool);let ended=false,seenTenpai=routeShantenQuick(hand,state.groups)===0;if(seenTenpai)tenpaiHits++;
+    for(let turn=1;turn<=depth;turn++){
+      if(Math.random()<haz){oppFirst++;ended=true;break}
+      const preSh=routeShantenQuick(hand,state.groups),t=drawFromPool(pool);if(t<0)break;hand[t]++;
+      const types=huTypes(hand,state.groups);if(types.length){wins++;if(types.some(x=>x!=='小胡'))bigWins++;winTurnSum+=turn;ended=true;break}
+      if(preSh===0&&(hand[t]>=4||exposedPengHas(state.groups,t)))gangOpp++;
+      const pick=quickBestDiscard(hand,state.groups,pool,state.style);if(!pick)break;hand[pick.d]--;
+      if(!seenTenpai&&routeShantenQuick(hand,state.groups)===0){seenTenpai=true;tenpaiHits++}
+    }
+    if(!ended)alive++;
+  }
+  const winRate=wins/trials,bigRate=bigWins/trials,oppRate=oppFirst/trials,gangRate=Math.min(1,gangOpp/trials),tenpaiRate=Math.min(1,tenpaiHits/trials),avgWin=wins?winTurnSum/wins:null;
+  const simScore=winRate*100+bigRate*38+gangRate*20+tenpaiRate*10-oppRate*52-initialRisk*.45;
+  return{d:row.d,winRate,bigRate,oppRate,gangRate,tenpaiRate,avgWin,simScore,initialRisk,staticRank:0};
+}
+function percent1(x){return (x*100).toFixed(1)+'%'}
+function deepSimulate(){
+  const out=document.querySelector('#simResult');out.innerHTML='<div class="status"><strong>正在本地模拟…</strong>按当前未知牌池抽样并自动续打。</div>';
+  setTimeout(()=>{try{const st=getState(),equiv=sum(st.hand)+st.groups.length*3;if(equiv!==14)throw new Error('深度模拟需要当前是14张待出牌状态。');const trials=Number(document.querySelector('#simTrials').value),depth=Number(document.querySelector('#simDepth').value);const rows=discardAnalysis(st).slice(0,6);const sims=rows.map((r,i)=>{const x=simulateCandidate(st,r,trials,depth);x.staticRank=i+1;return x});sims.sort((a,b)=>b.simScore-a.simScore);let html='<h2 style="margin-top:18px">v5 多步模拟</h2><div class="status"><strong>'+trials+'次 × 向后'+depth+'巡</strong>从未知牌池无放回抽样。对手先胡是公开信息风险模型；自身自摸/大胡与未来摸牌则按实际剩余张抽样。用于比较候选打法，不代表赌场意义上的精确概率。</div><table class="table"><thead><tr><th>#</th><th>打</th><th>静态排名</th><th>自摸</th><th>其中大胡</th><th>进入听牌</th><th>杠摇机会</th><th>对手先胡</th><th>平均胡牌</th></tr></thead><tbody>';
+    sims.forEach((x,i)=>{html+='<tr class="'+(i===0?'best':'')+'"><td class="rank">'+(i+1)+'</td><td><b>'+pretty(x.d)+'</b></td><td>'+x.staticRank+'</td><td><b>'+percent1(x.winRate)+'</b></td><td>'+percent1(x.bigRate)+'</td><td>'+percent1(x.tenpaiRate)+'</td><td>'+percent1(x.gangRate)+'</td><td>'+percent1(x.oppRate)+'</td><td>'+(x.avgWin?x.avgWin.toFixed(2)+'巡':'—')+'</td></tr>'});html+='</tbody></table>';
+    if(sims.length&&sims[0].staticRank!==1)html+='<div class="status warn"><strong>多步模拟改变了第一选择</strong>静态牌效第一与未来'+depth+'巡综合结果不同。优先考虑 <b>'+pretty(sims[0].d)+'</b>：这通常来自后续改良、对子/七对/杠摇价值或风险差异。</div>';
+    out.innerHTML=html;}catch(e){out.innerHTML='<div class="status err"><strong>无法深度模拟</strong>'+esc(e.message)+'</div>'}},30);
+}
+
+function renderTiles(counts,el){el.innerHTML='';for(let i=0;i<27;i++)for(let k=0;k<counts[i];k++){const s=SUITS[Math.floor(i/9)],sp=document.createElement('span');sp.className='tile '+s;sp.textContent=pretty(i);el.appendChild(sp)}}
+function esc(s){return String(s).replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function getState(){
+  const hand=parseTiles(document.querySelector('#hand').value),groups=parseMeldGroups(document.querySelector('#melds').value);
+  const upL=parseTileList(document.querySelector('#riverUp').value),acL=parseTileList(document.querySelector('#riverAcross').value),downL=parseTileList(document.querySelector('#riverDown').value);
+  const upC=listToCounts(upL),acC=listToCounts(acL),downC=listToCounts(downL);
+  const openUp=parseMeldGroups(document.querySelector('#openUp').value),openAcross=parseMeldGroups(document.querySelector('#openAcross').value),openDown=parseMeldGroups(document.querySelector('#openDown').value);
+  validateCounts(hand,groupsToCounts(groups),upC,acC,downC,groupsToCounts(openUp),groupsToCounts(openAcross),groupsToCounts(openDown));
+  return{hand,groups,upL,acL,downL,upC,acC,downC,openUp,openAcross,openDown,style:document.querySelector('#style').value,defense:document.querySelector('#defense').value,dryStreak:Number(document.querySelector('#dryStreak').value||0),threatUp:document.querySelector('#threatUp').value,threatAcross:document.querySelector('#threatAcross').value,threatDown:document.querySelector('#threatDown').value};
+}
+function analyze(){
+  const status=document.querySelector('#status'),rec=document.querySelector('#recommend'),kpis=document.querySelector('#kpis');document.querySelector('#callResult').innerHTML='';document.querySelector('#simResult').innerHTML='';
+  try{const st=getState();renderTiles(st.hand,document.querySelector('#preview'));const equiv=sum(st.hand)+st.groups.length*3;if(![13,14].includes(equiv))throw new Error('当前牌型按“每组副露算3张有效牌”后应为13或14张，现在是 '+equiv+'。');
+    const types=huTypes(st.hand,st.groups),big=types.filter(x=>x!=='小胡'),sit=gameSituation(st),visNow=visibleCounts(st),qNow=sevenPairsStats(st.hand,st.groups,visNow);
+    if(types.length){status.className='status '+(big.length?'big':'ok');status.innerHTML='<strong>已经成胡：'+types.join(' / ')+'</strong>'+(types.includes('小胡')&&!big.length?'这是小胡；卡摸只能自摸。':'存在大胡，可接炮。')}else{const u=strategicUkeire(clone(st.hand),st.groups,visNow,st);status.className='status';status.innerHTML='<strong>当前未胡</strong>最佳路线：'+esc(u.route)+'；'+(u.sh===0?'已经听牌':u.sh+' 向听')+'。'}
+    const pot=bigPotential(st.hand,st.groups),down=seatStats(st.openDown),pgNow=pairGangValue(st.hand,st.groups,visNow);kpis.innerHTML='<div class="kpi"><div><b>'+Math.round(pot.q*100)+'%</b><span>单一花色占比</span></div><div><b>'+Math.round(pot.peng*100)+'%</b><span>碰碰胡潜力</span></div><div><b>'+Math.round(pot.jiang*100)+'%</b><span>2/5/8占比</span></div><div><b>'+down.open+'</b><span>下家已副露组数</span></div><div><b>'+pgNow.pairs+'</b><span>暗手对子数</span></div><div><b>'+(qNow.available?qNow.pairUnits:'—')+'</b><span>七对对子单元</span></div><div><b>'+(pgNow.liveTrip+pgNow.livePeng)+'</b><span>直接活杠点</span></div><div><b>'+(sit.fold?'转守':sit.caution?'谨慎':'进攻')+'</b><span>当前策略状态</span></div></div>';
+    let banner='';if(sit.fold){const who=sit.profiles.slice().sort((a,b)=>b.score-a.score)[0];banner='<div class="status warn"><strong>建议弃胡防守</strong>当前对手威胁/连续不进张已触发转守。'+(who.signals.length?seatLabel[who.seat]+'：'+who.signals.join('、')+'。':'')+'本轮排序会大幅降低牌效权重，优先打低危险牌。</div>';}else if(sit.caution){banner='<div class="status warn"><strong>建议谨慎追胡</strong>局势开始偏危险，程序已提高防守权重，但还没有完全放弃进攻。</div>';}
+    if(equiv===14){const rows=discardAnalysis(st);let html=banner+'<h2 style="margin-top:16px">综合推荐出牌</h2><table class="table"><thead><tr><th>#</th><th>打</th><th>最佳路线</th><th>有效进张</th><th>对子/杠摇</th><th>七对 / 全求人</th><th>场上危险</th><th>主要进张</th></tr></thead><tbody>';
+      rows.slice(0,12).forEach((r,n)=>{const dc=dangerClass(r.risk),pgTxt='对'+r.pg.pairs+' / 刻'+r.pg.trips+(r.pg.liveTrip+r.pg.livePeng?' / 活杠'+(r.pg.liveTrip+r.pg.livePeng):'');let special='—',specialDetail=[];if(r.q.available&&r.q.pairUnits>=3){special='七对 '+r.q.pairUnits+'对 / 配对活张'+r.q.liveOuts;specialDetail.push(...r.q.details.slice(0,4));}if(r.aq){special='全求人吊 '+pretty(r.aq.wait)+' / 剩'+r.aq.left;specialDetail.push(...r.aq.reasons);}html+='<tr class="'+(n===0?'best':'')+'"><td class="rank">'+(n+1)+'</td><td><b>'+pretty(r.d)+'</b></td><td><b>'+esc(r.route)+'</b><br><span class="small">'+(r.sh===0?'听牌':r.sh+'向听')+'</span></td><td><b>'+r.total+'</b>张</td><td><b>'+pgTxt+'</b><details><summary>保留价值</summary><span class="small">'+(r.pg.details.length?r.pg.details.slice(0,4).map(esc).join('；'):'没有额外对子/活杠优势')+'</span></details></td><td><b>'+esc(special)+'</b>'+(specialDetail.length?'<details><summary>路线理由</summary><span class="small">'+specialDetail.map(esc).join('；')+'</span></details>':'')+'</td><td><span class="'+dc.cls+'">'+dc.label+'</span> <span class="small">('+r.risk.toFixed(1)+')</span><details><summary>为什么</summary><span class="small">'+(r.reasons.length?r.reasons.map(esc).join('；'):'公开信息下未发现明显喂牌/放铳风险')+'</span></details></td><td class="small">'+(r.eff.slice(0,7).map(x=>pretty(x.t)+'×'+x.left).join('、')||'—')+'</td></tr>'});
+      html+='</tbody></table><div class="hint">综合排序现在同时考虑：普通牌效、七对配对活张、全求人单吊质量、对子/活杠价值、卡下家/送杠风险，以及在高威胁或长期不进张时主动转守。</div>';
+      const risky=rows.slice().sort((a,b)=>b.risk-a.risk)[0];if(risky&&risky.risk>=18)html+='<div class="status warn"><strong>本手最需要卡住：'+pretty(risky.d)+'</strong>'+(risky.reasons.slice(0,3).map(esc).join('；')||'场上风险偏高')+'。</div>';
+      rec.innerHTML=html;
+    }else{const u=strategicUkeire(clone(st.hand),st.groups,visNow,st);let extra='';if(st.groups.length===4&&sum(st.hand)===1){const wt=st.hand.findIndex(x=>x>0),aq=allQiurenWaitValue(wt,st,visNow);extra='<br><b>全求人单吊：</b>'+pretty(wt)+'，外面约剩'+aq.left+'张。'+aq.reasons.join('；');}if(qNow.available&&qNow.pairUnits>=4)extra+='<br><b>七对：</b>已有'+qNow.pairUnits+'个对子单元，当前能直接配对的活张约'+qNow.liveOuts+'张。';rec.innerHTML=banner+'<h2 style="margin-top:16px">当前进张</h2><div class="status"><strong>'+(u.sh===0?'已经听牌':'当前 '+u.sh+' 向听')+'</strong>最佳路线：'+esc(u.route)+'；能改善的牌共 <b>'+u.total+'</b> 张：<br><span class="small">'+u.eff.map(x=>pretty(x.t)+'×'+x.left).join('、')+'</span>'+extra+'</div>'}
+  }catch(e){status.className='status err';status.innerHTML='<strong>输入有问题</strong>'+esc(e.message);rec.innerHTML='';kpis.innerHTML='';document.querySelector('#preview').innerHTML=''}
+}
+
+function bestAfterCall(st,newGroup,removeTiles){const h=clone(st.hand);for(const t of removeTiles){if(h[t]<=0)return null;h[t]--}const gs=st.groups.concat([newGroup]);const rows=discardAnalysis({...st,hand:h,groups:gs},h,gs);return rows[0]||null}
+function callAnalyze(){
+  const out=document.querySelector('#callResult');try{const st=getState(),raw=document.querySelector('#lastDiscard').value.trim();if(!raw)throw new Error('先填“别人刚打出的牌”。');const one=parseTiles(raw);if(sum(one)!==1)throw new Error('刚打出的牌只能填1张，例如7m。');const t=one.findIndex(x=>x),r=t%9,s=Math.floor(t/9),from=document.querySelector('#fromSeat').value,ops=[];const vis=visibleCounts(st),pass=strategicUkeire(clone(st.hand),st.groups,vis,st),sit=gameSituation(st);
+    if(st.hand[t]>=2){const g={tiles:[t,t,t],type:'peng',suit:SUITS[s]},b=bestAfterCall(st,g,[t,t]);if(b){const publicNow=visibleCounts(st),leftAfterPeng=Math.max(0,4-publicNow[t]-1);ops.push({name:'碰 '+pretty(t),best:b,pengGangLive:leftAfterPeng>0});}}
+    if(from==='up'){for(let start=r-2;start<=r;start++){if(start<0||start>6)continue;const ids=[s*9+start,s*9+start+1,s*9+start+2];if(!ids.includes(t))continue;const others=ids.filter(x=>x!==t);if(others.every(x=>st.hand[x]>0)){const g={tiles:ids,type:'chi',suit:SUITS[s]},b=bestAfterCall(st,g,others);if(b)ops.push({name:'吃 '+ids.map(pretty).join(''),best:b})}}}
+    let html='<h2 style="margin-top:18px">吃 / 碰判断</h2><div class="status '+(sit.fold?'warn':'')+'"><strong>过</strong>保持 '+(pass.sh===0?'听牌':pass.sh+'向听')+'，最佳路线 '+esc(pass.route)+'，有效进张约 '+pass.total+' 张。'+(sit.fold?'<br><b>当前已进入转守模式：</b>原则上优先过牌，不再为了追胡扩大副露。':'')+'</div>';
+    if(!ops.length)html+='<div class="status">这张牌当前没有合法的吃/碰。</div>';else{ops.sort((a,b)=>b.best.score-a.best.score);for(const op of ops){const b=op.best,gangBonus=op.pengGangLive?1:0;let better=(b.sh<pass.sh)||(b.sh===pass.sh&&b.total>pass.total+3&&b.risk<18)||(gangBonus&&b.sh<=pass.sh&&b.total>=Math.max(0,pass.total-4));if(sit.fold)better=false;const dc=dangerClass(b.risk);html+='<div class="status '+(better?'ok':'')+'"><strong>'+(better?'倾向 ':'谨慎 ')+op.name+'</strong>操作后最佳打 <b>'+pretty(b.d)+'</b>，'+(b.sh===0?'听牌':b.sh+'向听')+'，路线 '+esc(b.route)+'，有效进张 '+b.total+' 张；该弃牌综合危险 <span class="'+dc.cls+'">'+dc.label+'</span>。'+(op.pengGangLive?'<br><span class="small"><b>额外价值：</b>这次碰后第4张仍未见，后续自摸可加杠转杠摇；但若当前已进入转守，仍优先考虑不过牌。</span>':'')+(b.reasons.length?'<br><span class="small">'+b.reasons.slice(0,3).map(esc).join('；')+'</span>':'')+'</div>'}}
+    out.innerHTML=html;
+  }catch(e){out.innerHTML='<div class="status err"><strong>无法判断吃碰</strong>'+esc(e.message)+'</div>'}
+}
+
+document.querySelector('#analyze').onclick=analyze;document.querySelector('#simulate').onclick=deepSimulate;document.querySelector('#callAnalyze').onclick=callAnalyze;
+document.querySelector('#clear').onclick=()=>{for(const id of ['riverUp','riverAcross','riverDown','openUp','openAcross','openDown','lastDiscard'])document.querySelector('#'+id).value='';document.querySelector('#dryStreak').value='0';for(const id of ['threatUp','threatAcross','threatDown'])document.querySelector('#'+id).value='auto';analyze()};
+const samples=[
+  {h:'7788m 123456p 678s',d:'',od:''},
+  {h:'1122334455m 6p 7p 8p 9p',d:'',od:''},
+  {h:'1p 9p',d:'1m 9s 3p',od:'345m 678m 777p 222s',meld:'111m 234m 555p 678s'},
+  {h:'112346m 24566p 567s',d:'1m 9p 3s',od:'345m 678m 777p'}
+];let si=0;document.querySelector('#sample').onclick=()=>{si=(si+1)%samples.length;const x=samples[si];document.querySelector('#hand').value=x.h;document.querySelector('#melds').value=x.meld||'';document.querySelector('#riverDown').value=x.d;document.querySelector('#openDown').value=x.od;analyze()};
+analyze();
+</script>
+
+<script>
+(function(){
+  const idsToSave=['hand','melds','riverUp','riverAcross','riverDown','openUp','openAcross','openDown','style','defense','dryStreak','threatUp','threatAcross','threatDown','lastDiscard','fromSeat','simTrials','simDepth'];
+  const key='csmj-helper-v51-state';
+  function formatCountsCompact(c){const parts=[];for(let si=0;si<3;si++){let nums='';for(let r=1;r<=9;r++)nums+=String(r).repeat(c[si*9+r-1]||0);if(nums)parts.push(nums+SUITS[si]);}return parts.join(' ')}
+  function updateCount(){try{const c=parseTiles(document.querySelector('#hand').value);document.querySelector('#handCount').textContent=sum(c)+'张';}catch(_){document.querySelector('#handCount').textContent='格式待修正';}}
+  function save(){const data={};for(const id of idsToSave){const el=document.querySelector('#'+id);if(el)data[id]=el.value;}localStorage.setItem(key,JSON.stringify(data));updateCount();}
+  function restore(){try{const data=JSON.parse(localStorage.getItem(key)||'null');if(!data)return;for(const [id,v] of Object.entries(data)){const el=document.querySelector('#'+id);if(el)el.value=v;}}catch(_){}}
+  restore();
+  let removing=false;
+  function alterTile(t){let c;try{c=parseTiles(document.querySelector('#hand').value)}catch(_){c=arr27()}
+    if(removing){if(c[t]>0)c[t]--;}else{if(c[t]>=4){alert(pretty(t)+'已经有4张了');return;}c[t]++;}
+    document.querySelector('#hand').value=formatCountsCompact(c);save();
+  }
+  for(const [s,holder] of [['m','pickM'],['p','pickP'],['s','pickS']]){const box=document.querySelector('#'+holder);for(let r=1;r<=9;r++){const b=document.createElement('button');b.type='button';b.className='tile-btn '+s;b.textContent=r;b.setAttribute('aria-label',r+suitName[s]);b.onclick=()=>alterTile(idx(s,r));box.appendChild(b);}}
+  const rm=document.querySelector('#removeMode');rm.onclick=()=>{removing=!removing;rm.classList.toggle('active',removing);rm.textContent='减牌模式：'+(removing?'开':'关')};
+  document.querySelector('#sortHand').onclick=()=>{try{const c=parseTiles(document.querySelector('#hand').value);document.querySelector('#hand').value=formatCountsCompact(c);save();}catch(e){alert(e.message)}};
+  document.querySelector('#clearHand').onclick=()=>{document.querySelector('#hand').value='';save()};
+  for(const id of idsToSave){const el=document.querySelector('#'+id);if(el){el.addEventListener('input',save);el.addEventListener('change',save);}}
+  document.querySelector('#mobileAnalyze').onclick=()=>{analyze();document.querySelector('#status').scrollIntoView({behavior:'smooth',block:'start'})};
+  document.querySelector('#mobileCall').onclick=()=>{callAnalyze();document.querySelector('#callResult').scrollIntoView({behavior:'smooth',block:'start'})};
+  updateCount();
+
+  let deferredPrompt=null; const install=document.querySelector('#installApp');
+  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;install.style.display='inline-block'});
+  install.onclick=async()=>{if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;install.style.display='none';}else{alert('iPhone：Safari 打开本页 → 分享 → 添加到主屏幕。Android：浏览器菜单 → 安装应用/添加到主屏幕。')}};
+  const isiOS=/iphone|ipad|ipod/i.test(navigator.userAgent); if(isiOS && !window.matchMedia('(display-mode: standalone)').matches)install.style.display='inline-block';
+  if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}
+})();
+</script>
+
+</body>
+</html>
