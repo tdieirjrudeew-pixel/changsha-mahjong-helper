@@ -1,0 +1,23 @@
+{
+  "name": "长沙麻将卡摸助手",
+  "short_name": "长沙卡摸",
+  "description": "长沙麻将卡摸实战决策助手：牌效、多步模拟、对子/杠摇、七对、全求人与防守。",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f1e8",
+  "theme_color": "#0f766e",
+  "lang": "zh-CN",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
